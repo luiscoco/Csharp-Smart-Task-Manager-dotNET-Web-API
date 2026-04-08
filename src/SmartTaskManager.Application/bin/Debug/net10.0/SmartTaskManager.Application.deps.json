@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v10.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v10.0": {
+      "SmartTaskManager.Application/1.0.0": {
+        "dependencies": {
+          "SmartTaskManager.Domain": "1.0.0"
+        },
+        "runtime": {
+          "SmartTaskManager.Application.dll": {}
+        }
+      },
+      "SmartTaskManager.Domain/1.0.0": {
+        "runtime": {
+          "SmartTaskManager.Domain.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SmartTaskManager.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "SmartTaskManager.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
