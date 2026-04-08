@@ -1,0 +1,11 @@
+# .NET local CLI state
+.dotnet/
+
+# Build outputs
+**/bin/
+**/obj/
+
+# IDE files
+.vs/
+*.user
+*.suo

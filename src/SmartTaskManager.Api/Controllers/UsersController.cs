@@ -34,14 +34,14 @@ public sealed class UsersController : ControllerBase
         UserResponse response = UserResponse.FromDomain(user);
 
         return CreatedAtAction(
-            nameof(GetUserById),
+            nameof(GetUser),
             new { userId = response.Id },
             response);
     }
 
     [HttpGet]
     [ProducesResponseType(typeof(IReadOnlyCollection<UserResponse>), 200)]
-    public async Task<ActionResult<IReadOnlyCollection<UserResponse>>> GetUsers(CancellationToken cancellationToken)
+    public async Task<ActionResult<IReadOnlyCollection<UserResponse>>> ListUsers(CancellationToken cancellationToken)
     {
         IReadOnlyCollection<User> users = await _userService.ListUsersAsync(cancellationToken);
         return Ok(users.Select(UserResponse.FromDomain).ToList());
@@ -50,7 +50,9 @@ public sealed class UsersController : ControllerBase
     [HttpGet("{userId:guid}")]
     [ProducesResponseType(typeof(UserResponse), 200)]
     [ProducesResponseType(404)]
-    public async Task<ActionResult<UserResponse>> GetUserById(Guid userId, CancellationToken cancellationToken)
+    public async Task<ActionResult<UserResponse>> GetUser(
+        [FromRoute] Guid userId,
+        CancellationToken cancellationToken)
     {
         User user = await _userService.GetUserAsync(userId, cancellationToken);
         return Ok(UserResponse.FromDomain(user));
