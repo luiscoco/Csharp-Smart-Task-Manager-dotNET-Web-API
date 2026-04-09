@@ -63,7 +63,13 @@ public sealed class TasksController : ControllerBase
     /// Returns a user's tasks, optionally filtered by status, priority, or overdue state.
     /// </summary>
     /// <param name="userId">The unique identifier of the owning user.</param>
-    /// <param name="request">Optional query filters. Use only one filter at a time.</param>
+    /// <param name="request">
+    /// Optional query filters. Supported examples:
+    /// <c>?status=Pending</c>,
+    /// <c>?priority=High</c>,
+    /// <c>?overdue=true</c>.
+    /// Use only one filter at a time.
+    /// </param>
     /// <param name="cancellationToken">The cancellation token for the request.</param>
     /// <response code="200">The tasks were returned successfully.</response>
     /// <response code="400">The query string contains invalid filters.</response>
@@ -77,7 +83,15 @@ public sealed class TasksController : ControllerBase
         [FromQuery] TaskListQueryRequest request,
         CancellationToken cancellationToken)
     {
-        IReadOnlyCollection<TaskSummary> tasks = await ListRequestedTasksAsync(userId, request, cancellationToken);
+        TaskQueryCriteria criteria = new(
+            request.Status,
+            request.Priority,
+            request.Overdue);
+
+        IReadOnlyCollection<TaskSummary> tasks = await _taskService.QueryTasksAsync(
+            userId,
+            criteria,
+            cancellationToken);
 
         return Ok(TaskResponse.FromApplication(tasks));
     }
@@ -256,26 +270,4 @@ public sealed class TasksController : ControllerBase
         };
     }
 
-    private async Task<IReadOnlyCollection<TaskSummary>> ListRequestedTasksAsync(
-        Guid userId,
-        TaskListQueryRequest request,
-        CancellationToken cancellationToken)
-    {
-        if (request.Status.HasValue)
-        {
-            return await _taskService.FilterTasksByStatusAsync(userId, request.Status.Value, cancellationToken);
-        }
-
-        if (request.Priority.HasValue)
-        {
-            return await _taskService.FilterTasksByPriorityAsync(userId, request.Priority.Value, cancellationToken);
-        }
-
-        if (request.Overdue)
-        {
-            return await _taskService.GetOverdueTasksAsync(userId, cancellationToken: cancellationToken);
-        }
-
-        return await _taskService.ListTasksAsync(userId, cancellationToken);
-    }
 }

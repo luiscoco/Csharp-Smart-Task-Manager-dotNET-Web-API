@@ -96,6 +96,17 @@ public sealed class TaskService
         return CreateSummaries(tasks);
     }
 
+    public async Task<IReadOnlyCollection<TaskSummary>> QueryTasksAsync(
+        Guid userId,
+        TaskQueryCriteria criteria,
+        CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(criteria);
+
+        IReadOnlyCollection<BaseTask> tasks = await LoadTasksForUserAsync(userId, cancellationToken);
+        return FilterTasks(tasks, criteria);
+    }
+
     public async Task<IReadOnlyCollection<TaskSummary>> FilterTasksByStatusAsync(
         Guid userId,
         DomainTaskStatus status,
@@ -280,6 +291,32 @@ public sealed class TaskService
         return SortTasks(tasks)
             .Select(task => CreateSummary(task, effectiveReferenceDate))
             .ToList();
+    }
+
+    private IReadOnlyCollection<TaskSummary> FilterTasks(
+        IReadOnlyCollection<BaseTask> tasks,
+        TaskQueryCriteria criteria)
+    {
+        if (criteria.Status.HasValue)
+        {
+            IReadOnlyCollection<BaseTask> filteredTasks = _statusTaskFilter.Apply(tasks, criteria.Status.Value);
+            return CreateSummaries(filteredTasks);
+        }
+
+        if (criteria.Priority.HasValue)
+        {
+            IReadOnlyCollection<BaseTask> filteredTasks = ApplyPriorityFilter(tasks, criteria.Priority.Value);
+            return CreateSummaries(filteredTasks);
+        }
+
+        if (criteria.Overdue)
+        {
+            DateTime referenceDate = _dateTimeProvider.UtcNow;
+            IReadOnlyCollection<BaseTask> filteredTasks = _overdueTaskFilter.Apply(tasks, referenceDate);
+            return CreateSummaries(filteredTasks, referenceDate);
+        }
+
+        return CreateSummaries(tasks);
     }
 
     private static IReadOnlyCollection<BaseTask> ApplyPriorityFilter(
