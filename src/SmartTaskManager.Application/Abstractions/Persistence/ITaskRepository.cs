@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SmartTaskManager.Domain.Entities;
 
-namespace SmartTaskManager.Domain.Interfaces;
+namespace SmartTaskManager.Application.Abstractions.Persistence;
 
 public interface ITaskRepository : IRepository<BaseTask>
 {

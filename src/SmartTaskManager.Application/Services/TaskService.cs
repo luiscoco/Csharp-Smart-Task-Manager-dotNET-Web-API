@@ -3,13 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SmartTaskManager.Application.Abstractions.Notifications;
+using SmartTaskManager.Application.Abstractions.Persistence;
 using SmartTaskManager.Application.Abstractions.Services;
 using SmartTaskManager.Application.DTOs;
 using SmartTaskManager.Application.Filters;
 using SmartTaskManager.Domain.Common;
 using SmartTaskManager.Domain.Entities;
 using SmartTaskManager.Domain.Enums;
-using SmartTaskManager.Domain.Interfaces;
 using SmartTaskManager.Domain.Records;
 using DomainTaskStatus = SmartTaskManager.Domain.Enums.TaskStatus;
 

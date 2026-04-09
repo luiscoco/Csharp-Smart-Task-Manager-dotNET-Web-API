@@ -4,9 +4,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using SmartTaskManager.Application.Abstractions.Persistence;
 using SmartTaskManager.Domain.Common;
 using SmartTaskManager.Domain.Entities;
-using SmartTaskManager.Domain.Interfaces;
 using SmartTaskManager.Infrastructure.Persistence;
 using SmartTaskManager.Infrastructure.Persistence.Models;
 

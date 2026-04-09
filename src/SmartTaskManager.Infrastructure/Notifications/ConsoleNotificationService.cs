@@ -1,7 +1,7 @@
 using System;
 using System.IO;
+using SmartTaskManager.Application.Abstractions.Notifications;
 using SmartTaskManager.Domain.Entities;
-using SmartTaskManager.Domain.Interfaces;
 
 namespace SmartTaskManager.Infrastructure.Notifications;
 

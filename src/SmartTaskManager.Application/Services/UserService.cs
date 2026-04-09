@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using SmartTaskManager.Application.Abstractions.Persistence;
 using SmartTaskManager.Domain.Common;
 using SmartTaskManager.Domain.Entities;
-using SmartTaskManager.Domain.Interfaces;
 
 namespace SmartTaskManager.Application.Services;
 

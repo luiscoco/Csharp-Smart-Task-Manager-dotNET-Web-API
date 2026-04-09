@@ -1,6 +1,6 @@
 using SmartTaskManager.Domain.Entities;
 
-namespace SmartTaskManager.Domain.Interfaces;
+namespace SmartTaskManager.Application.Abstractions.Notifications;
 
 public interface INotificationService
 {
