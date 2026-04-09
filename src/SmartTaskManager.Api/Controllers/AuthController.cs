@@ -16,7 +16,7 @@ namespace SmartTaskManager.Api.Controllers;
 /// Issues JWT tokens for testing protected endpoints in Swagger.
 /// </summary>
 [ApiController]
-[AllowAnonymous]
+[Authorize(Policy = AuthorizationPolicies.DevelopmentOnly)]
 [Tags("Authentication")]
 [Route("api/auth")]
 public sealed class AuthController : ControllerBase
@@ -37,10 +37,12 @@ public sealed class AuthController : ControllerBase
     /// <param name="cancellationToken">The cancellation token for the request.</param>
     /// <response code="200">The token was created successfully.</response>
     /// <response code="400">The request payload is invalid.</response>
+    /// <response code="403">The token endpoint is available only in Development.</response>
     /// <response code="404">The user was not found.</response>
     [HttpPost("token")]
     [ProducesResponseType(typeof(AccessTokenResponse), 200)]
     [ProducesResponseType(typeof(ApiErrorResponse), 400)]
+    [ProducesResponseType(typeof(ApiErrorResponse), 403)]
     [ProducesResponseType(typeof(ApiErrorResponse), 404)]
     public async Task<ActionResult<AccessTokenResponse>> CreateToken(
         [FromBody] CreateAccessTokenRequest request,

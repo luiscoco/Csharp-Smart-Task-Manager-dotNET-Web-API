@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Text.Json.Serialization;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -104,6 +105,8 @@ public static class ServiceCollectionExtensions
 
         services.AddSingleton(jwtOptions);
         services.AddSingleton<JwtTokenService>();
+        services.AddSingleton<IAuthorizationHandler, RouteUserAccessAuthorizationHandler>();
+        services.AddSingleton<IAuthorizationHandler, DevelopmentOnlyAuthorizationHandler>();
 
         services
             .AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -152,7 +155,19 @@ public static class ServiceCollectionExtensions
                 };
             });
 
-        services.AddAuthorization();
+        services.AddAuthorization(options =>
+        {
+            options.AddPolicy(AuthorizationPolicies.RouteUserAccess, policy =>
+            {
+                policy.RequireAuthenticatedUser();
+                policy.AddRequirements(new RouteUserAccessRequirement());
+            });
+
+            options.AddPolicy(AuthorizationPolicies.DevelopmentOnly, policy =>
+            {
+                policy.AddRequirements(new DevelopmentOnlyRequirement());
+            });
+        });
 
         return services;
     }

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using SmartTaskManager.Api.Contracts;
 using SmartTaskManager.Api.Contracts.Requests;
 using SmartTaskManager.Api.Contracts.Responses;
+using SmartTaskManager.Api.Security;
 using SmartTaskManager.Application.DTOs;
 using SmartTaskManager.Application.Services;
 using SmartTaskManager.Domain.Records;
@@ -18,7 +19,7 @@ namespace SmartTaskManager.Api.Controllers;
 /// Manages task creation, lifecycle actions, history, filters, and dashboard summaries.
 /// </summary>
 [ApiController]
-[Authorize]
+[Authorize(Policy = AuthorizationPolicies.RouteUserAccess)]
 [Tags("Tasks")]
 [Route("api/users/{userId:guid}/tasks")]
 [ProducesResponseType(typeof(ApiErrorResponse), 401)]

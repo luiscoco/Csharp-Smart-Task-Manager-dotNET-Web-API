@@ -232,7 +232,6 @@ public sealed class TaskService
         BaseTask task = taskFactory(user);
 
         await _taskRepository.AddAsync(task, cancellationToken);
-        await _userRepository.UpdateAsync(user, cancellationToken);
 
         _notificationService.Notify($"Task '{task.Title}' created successfully.");
 

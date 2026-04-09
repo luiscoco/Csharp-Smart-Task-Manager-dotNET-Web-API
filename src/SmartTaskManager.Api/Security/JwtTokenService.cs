@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using SmartTaskManager.Api.Contracts.Responses;
+using SmartTaskManager.Application.Abstractions.Services;
 using SmartTaskManager.Domain.Entities;
 
 namespace SmartTaskManager.Api.Security;
@@ -12,12 +13,14 @@ namespace SmartTaskManager.Api.Security;
 public sealed class JwtTokenService
 {
     private readonly JwtOptions _jwtOptions;
+    private readonly IDateTimeProvider _dateTimeProvider;
     private readonly SigningCredentials _signingCredentials;
     private readonly JwtSecurityTokenHandler _tokenHandler;
 
-    public JwtTokenService(JwtOptions jwtOptions)
+    public JwtTokenService(JwtOptions jwtOptions, IDateTimeProvider dateTimeProvider)
     {
         _jwtOptions = jwtOptions ?? throw new ArgumentNullException(nameof(jwtOptions));
+        _dateTimeProvider = dateTimeProvider ?? throw new ArgumentNullException(nameof(dateTimeProvider));
 
         byte[] signingKeyBytes = Encoding.UTF8.GetBytes(_jwtOptions.SigningKey);
         SymmetricSecurityKey signingKey = new(signingKeyBytes);
@@ -30,7 +33,7 @@ public sealed class JwtTokenService
     {
         ArgumentNullException.ThrowIfNull(user);
 
-        DateTime issuedAtUtc = DateTime.UtcNow;
+        DateTime issuedAtUtc = _dateTimeProvider.UtcNow;
         DateTime expiresAtUtc = issuedAtUtc.AddMinutes(_jwtOptions.TokenLifetimeMinutes);
 
         List<Claim> claims = new()
