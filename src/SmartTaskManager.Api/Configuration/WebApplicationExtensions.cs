@@ -55,7 +55,7 @@ public static class WebApplicationExtensions
         DatabaseInitializer databaseInitializer = serviceProvider.GetRequiredService<DatabaseInitializer>();
         await databaseInitializer.ApplyMigrationsAsync();
 
-        if (!ShouldSeedSampleData(configuration))
+        if (!ShouldSeedSampleData(app.Environment, configuration))
         {
             return;
         }
@@ -65,8 +65,10 @@ public static class WebApplicationExtensions
         logger.LogInformation("Sample data seeding completed.");
     }
 
-    private static bool ShouldSeedSampleData(IConfiguration configuration)
+    private static bool ShouldSeedSampleData(IHostEnvironment hostEnvironment, IConfiguration configuration)
     {
-        return bool.TryParse(configuration["Seeding:EnableSampleData"], out bool value) && value;
+        bool sampleDataEnabled = bool.TryParse(configuration["Seeding:EnableSampleData"], out bool value) && value;
+
+        return hostEnvironment.IsDevelopment() && sampleDataEnabled;
     }
 }

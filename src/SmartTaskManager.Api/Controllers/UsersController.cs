@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using SmartTaskManager.Api.Contracts.Requests;
 using SmartTaskManager.Api.Contracts.Responses;
+using SmartTaskManager.Api.Security;
 using SmartTaskManager.Application.Services;
 using SmartTaskManager.Domain.Entities;
 
@@ -16,7 +17,6 @@ namespace SmartTaskManager.Api.Controllers;
 /// Manages user creation and user lookups.
 /// </summary>
 [ApiController]
-[AllowAnonymous]
 [Tags("Users")]
 [Route("api/users")]
 public sealed class UsersController : ControllerBase
@@ -55,11 +55,15 @@ public sealed class UsersController : ControllerBase
 
     /// <summary>
     /// Returns all users ordered by name.
+    /// This endpoint is intended for local development and Swagger-based exploration.
     /// </summary>
     /// <param name="cancellationToken">The cancellation token for the request.</param>
     /// <response code="200">The users were returned successfully.</response>
+    /// <response code="403">User listing is available only in Development.</response>
     [HttpGet]
+    [Authorize(Policy = AuthorizationPolicies.DevelopmentOnly)]
     [ProducesResponseType(typeof(IReadOnlyCollection<UserResponse>), 200)]
+    [ProducesResponseType(typeof(ApiErrorResponse), 403)]
     public async Task<ActionResult<IReadOnlyCollection<UserResponse>>> ListUsers(CancellationToken cancellationToken)
     {
         IReadOnlyCollection<User> users = await _userService.ListUsersAsync(cancellationToken);
