@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SmartTaskManager.Domain.Records;
 
 namespace SmartTaskManager.Api.Contracts.Responses;
@@ -16,5 +18,14 @@ public sealed record HistoryEntryResponse(
             historyEntry.OccurredOnUtc,
             historyEntry.Action,
             historyEntry.Details);
+    }
+
+    public static IReadOnlyCollection<HistoryEntryResponse> FromDomain(IEnumerable<HistoryEntry> historyEntries)
+    {
+        ArgumentNullException.ThrowIfNull(historyEntries);
+
+        return historyEntries
+            .Select(FromDomain)
+            .ToList();
     }
 }

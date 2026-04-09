@@ -33,6 +33,12 @@ public sealed class ApiExceptionMiddleware
 
     private async Task HandleExceptionAsync(HttpContext httpContext, Exception exception)
     {
+        if (httpContext.Response.HasStarted)
+        {
+            _logger.LogWarning(exception, "The response has already started, so the API error response could not be written.");
+            throw exception;
+        }
+
         int statusCode = ResolveStatusCode(exception);
 
         if (statusCode >= StatusCodes.Status500InternalServerError)
@@ -47,11 +53,59 @@ public sealed class ApiExceptionMiddleware
         httpContext.Response.StatusCode = statusCode;
         httpContext.Response.ContentType = MediaTypeNames.Application.Json;
 
-        ApiErrorResponse response = new(
-            statusCode,
-            exception.Message);
+        ApiErrorResponse response = CreateErrorResponse(httpContext, exception, statusCode);
 
         await httpContext.Response.WriteAsJsonAsync(response);
+    }
+
+    private static ApiErrorResponse CreateErrorResponse(
+        HttpContext httpContext,
+        Exception exception,
+        int statusCode)
+    {
+        string path = httpContext.Request.Path.HasValue
+            ? httpContext.Request.Path.Value!
+            : "/";
+
+        return statusCode switch
+        {
+            StatusCodes.Status404NotFound => ApiErrorResponse.Create(
+                statusCode,
+                "Resource not found.",
+                exception.Message,
+                httpContext.TraceIdentifier,
+                path),
+            StatusCodes.Status409Conflict => ApiErrorResponse.Create(
+                statusCode,
+                "Conflict.",
+                exception.Message,
+                httpContext.TraceIdentifier,
+                path),
+            StatusCodes.Status403Forbidden => ApiErrorResponse.Create(
+                statusCode,
+                "Access denied.",
+                "You do not have permission to perform this action.",
+                httpContext.TraceIdentifier,
+                path),
+            StatusCodes.Status401Unauthorized => ApiErrorResponse.Create(
+                statusCode,
+                "Authentication required.",
+                "A valid bearer token is required to access this resource.",
+                httpContext.TraceIdentifier,
+                path),
+            StatusCodes.Status500InternalServerError => ApiErrorResponse.Create(
+                statusCode,
+                "Server error.",
+                "An unexpected error occurred while processing the request.",
+                httpContext.TraceIdentifier,
+                path),
+            _ => ApiErrorResponse.Create(
+                statusCode,
+                "Request failed.",
+                exception.Message,
+                httpContext.TraceIdentifier,
+                path)
+        };
     }
 
     private static int ResolveStatusCode(Exception exception)
@@ -60,6 +114,7 @@ public sealed class ApiExceptionMiddleware
         {
             DomainException domainException => ResolveDomainStatusCode(domainException.Message),
             ArgumentException => StatusCodes.Status400BadRequest,
+            UnauthorizedAccessException => StatusCodes.Status403Forbidden,
             _ => StatusCodes.Status500InternalServerError
         };
     }

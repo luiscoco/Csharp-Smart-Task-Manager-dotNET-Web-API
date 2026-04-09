@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using SmartTaskManager.Domain.Entities;
 
 namespace SmartTaskManager.Api.Contracts.Responses;
@@ -16,5 +18,14 @@ public sealed record UserResponse(
             user.Id,
             user.UserName,
             user.CreatedOnUtc);
+    }
+
+    public static IReadOnlyCollection<UserResponse> FromDomain(IEnumerable<User> users)
+    {
+        ArgumentNullException.ThrowIfNull(users);
+
+        return users
+            .Select(FromDomain)
+            .ToList();
     }
 }

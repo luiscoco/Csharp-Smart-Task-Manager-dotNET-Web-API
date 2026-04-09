@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace SmartTaskManager.Api.Contracts.Requests;
 
-public sealed class CreateUserRequest : IValidatableObject
+public sealed class CreateAccessTokenRequest : IValidatableObject
 {
     [Required(AllowEmptyStrings = false)]
     [StringLength(100, MinimumLength = 1)]

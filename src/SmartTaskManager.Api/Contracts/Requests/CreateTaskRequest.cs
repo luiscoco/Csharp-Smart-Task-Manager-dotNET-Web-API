@@ -8,27 +8,48 @@ namespace SmartTaskManager.Api.Contracts.Requests;
 
 public sealed class CreateTaskRequest : IValidatableObject
 {
-    [Required]
-    [StringLength(200)]
+    [Required(AllowEmptyStrings = false)]
+    [StringLength(200, MinimumLength = 1)]
     public string Title { get; init; } = string.Empty;
 
     [StringLength(2000)]
-    public string Description { get; init; } = string.Empty;
+    public string? Description { get; init; }
 
-    public DateTime DueDate { get; init; }
+    [Required]
+    public DateTime? DueDate { get; init; }
 
-    public TaskPriority Priority { get; init; }
+    [Required]
+    [EnumDataType(typeof(TaskPriority))]
+    public TaskPriority? Priority { get; init; }
 
     [StringLength(100)]
     public string? CategoryName { get; init; }
 
-    public TaskKind TaskType { get; init; }
+    [Required]
+    [EnumDataType(typeof(TaskKind))]
+    public TaskKind? TaskType { get; init; }
 
     public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
     {
-        if (DueDate == default)
+        if (string.IsNullOrWhiteSpace(Title))
         {
-            yield return new ValidationResult("DueDate is required.", new[] { nameof(DueDate) });
+            yield return new ValidationResult(
+                "Title is required.",
+                new[] { nameof(Title) });
+        }
+
+        if (DueDate.HasValue && DueDate.Value == default)
+        {
+            yield return new ValidationResult(
+                "DueDate is required.",
+                new[] { nameof(DueDate) });
+        }
+
+        if (CategoryName is not null && string.IsNullOrWhiteSpace(CategoryName))
+        {
+            yield return new ValidationResult(
+                "CategoryName cannot be empty when provided.",
+                new[] { nameof(CategoryName) });
         }
     }
 }

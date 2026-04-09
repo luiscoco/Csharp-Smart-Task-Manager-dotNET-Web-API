@@ -42,6 +42,22 @@ public sealed class UserService
         return user;
     }
 
+    public async Task<User> GetUserByNameAsync(string userName, CancellationToken cancellationToken = default)
+    {
+        string normalizedUserName = ValidateUserName(userName);
+        IReadOnlyCollection<User> users = await _userRepository.ListAsync(cancellationToken);
+
+        User? user = users.FirstOrDefault(existingUser =>
+            string.Equals(existingUser.UserName, normalizedUserName, StringComparison.OrdinalIgnoreCase));
+
+        if (user is null)
+        {
+            throw new DomainException("User not found.");
+        }
+
+        return user;
+    }
+
     public async Task<IReadOnlyCollection<User>> ListUsersAsync(CancellationToken cancellationToken = default)
     {
         IReadOnlyCollection<User> users = await _userRepository.ListAsync(cancellationToken);

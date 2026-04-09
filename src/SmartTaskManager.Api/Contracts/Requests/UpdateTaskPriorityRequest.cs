@@ -6,5 +6,6 @@ namespace SmartTaskManager.Api.Contracts.Requests;
 public sealed class UpdateTaskPriorityRequest
 {
     [Required]
-    public TaskPriority Priority { get; init; }
+    [EnumDataType(typeof(TaskPriority))]
+    public TaskPriority? Priority { get; init; }
 }
