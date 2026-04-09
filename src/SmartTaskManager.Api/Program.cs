@@ -7,7 +7,8 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 builder.Services
     .AddSmartTaskManagerApiPresentation()
     .AddSmartTaskManagerApiSecurity(builder.Configuration)
-    .AddSmartTaskManagerApplicationServices()
+    .AddSmartTaskManagerUseCaseServices()
+    .AddSmartTaskManagerApiRuntimeServices()
     .AddSmartTaskManagerInfrastructure();
 
 WebApplication app = builder.Build();

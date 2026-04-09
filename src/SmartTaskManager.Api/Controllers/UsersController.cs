@@ -37,6 +37,7 @@ public sealed class UsersController : ControllerBase
     /// <response code="400">The request payload is invalid.</response>
     /// <response code="409">A user with the same name already exists.</response>
     [HttpPost]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(UserResponse), 201)]
     [ProducesResponseType(typeof(ApiErrorResponse), 400)]
     [ProducesResponseType(typeof(ApiErrorResponse), 409)]
@@ -78,6 +79,7 @@ public sealed class UsersController : ControllerBase
     /// <response code="200">The user was found and returned.</response>
     /// <response code="404">The user was not found.</response>
     [HttpGet("{userId:guid}")]
+    [AllowAnonymous]
     [ProducesResponseType(typeof(UserResponse), 200)]
     [ProducesResponseType(typeof(ApiErrorResponse), 404)]
     public async Task<ActionResult<UserResponse>> GetUser(

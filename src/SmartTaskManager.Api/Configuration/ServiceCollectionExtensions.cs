@@ -172,7 +172,7 @@ public static class ServiceCollectionExtensions
         return services;
     }
 
-    public static IServiceCollection AddSmartTaskManagerApplicationServices(this IServiceCollection services)
+    public static IServiceCollection AddSmartTaskManagerUseCaseServices(this IServiceCollection services)
     {
         ArgumentNullException.ThrowIfNull(services);
 
@@ -182,6 +182,14 @@ public static class ServiceCollectionExtensions
 
         services.AddScoped<UserService>();
         services.AddScoped<TaskService>();
+
+        return services;
+    }
+
+    public static IServiceCollection AddSmartTaskManagerApiRuntimeServices(this IServiceCollection services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
         services.AddScoped<SampleDataSeeder>();
 
         return services;
